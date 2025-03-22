@@ -82,7 +82,7 @@ console.log(arr); // Output: [11, 12, 22, 25, 34, 64, 90]
 ![Selection Sort](https://media.geeksforgeeks.org/wp-content/uploads/selectionSort.gif)
 
 
-
+```js
 function bubbleSort(arr) {
   for (let i = 0; i < arr.length; i++) {
     for (let j = 0; j < arr.length - 1 - i; j++) { // Optimize by reducing iterations
@@ -93,8 +93,9 @@ function bubbleSort(arr) {
   }
   return arr;
 }
+```
 
-
+```js
 function selectionSort(arr) {
   for (let i = 0; i < arr.length; i++) {
     let minIndex = i; // Find the index of the smallest element
@@ -109,8 +110,9 @@ function selectionSort(arr) {
   }
   return arr;
 }
+```
 
-
+```js
 function insertionSort(arr){
   for(let i=0;i<arr.length;i++){
     for(j=i;j>0;j--){
@@ -124,7 +126,9 @@ function insertionSort(arr){
   }
   return arr
 }
+```
 
+```js
 function mergeSort(arr){
   if(arr.length<=1) return arr;
   let mid = Math.floor(arr.length/2);
@@ -145,7 +149,9 @@ function merge (left ,right){
   }
   return [...result,...left,...right]
 }
+```
 
+```js
 function quickSort(arr){
   if(arr.length<=1) return arr
   let random = Math.floor(Math.random()*arr.length)
@@ -166,11 +172,13 @@ function quickSort(arr){
   return [...quickSort(left),pivot,...quickSort(right)]
   
 }
+```
 
-
+```js
 let arr = [2, 5, 6, 7, -9, -5, 0, -2, 0, 4, 2, 33, 1];
 console.log("Bubble Sort:", bubbleSort([...arr])); 
 console.log("Selection Sort:", selectionSort([...arr]));
 console.log("Insertion Sort:", insertionSort([...arr]));
 console.log("Merge Sort:", mergeSort([...arr]));
 console.log("Quick Sort:", quickSort([...arr]));
+```
