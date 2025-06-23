@@ -24,7 +24,7 @@ Asymptotic analysis is a method of evaluating an algorithm's performance by focu
 
 Asymptotic notations are the mathematical tools we use to describe an algorithm's complexity.
 
-![Big O](https://raw.githubusercontent.com/aswanthnarayan/Programming-Resources/main/Daigrams/BigO.png)
+![Big O](https://raw.githubusercontent.com/aswanthnarayan/ProgrammingNotes/main/Daigrams/BigO.png)
 
 ### 1. Big-O Notation (O)
 
