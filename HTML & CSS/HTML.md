@@ -96,10 +96,10 @@ HTML elements are the building blocks of HTML documents. They consist of a start
 - `<ins>`: Represents inserted text.
 - `<sub>`: Defines subscripted text.
 - `<sup>`: Defines superscripted text.
-- `<span>`: Defines a section in a document.
-- `<b>`: Defines bold text.
-- `<i>`: Defines italic text.
-- `<u>`: Defines underlined text.
+- `<span>`: A generic inline container for phrasing content. It doesn't represent anything on its own but is used to group elements for styling purposes (with `class` or `id`) or to share attribute values.
+- `<b>`: Represents text that should be stylistically offset from normal prose (like keywords or product names) without conveying any extra importance.
+- `<i>`: Represents text in an alternate voice or mood, such as a technical term, a thought, or a name in a different language.
+- `<u>`: Represents a span of text with an unarticulated, non-textual annotation. Avoid using it if it could be confused with a hyperlink.
 - `<code>`: Defines a piece of computer code.
 - `<kbd>`: Defines keyboard input.
 - `<samp>`: Defines sample output from a computer program.
@@ -276,7 +276,7 @@ Metadata is data that describes other data. In HTML, metadata is information abo
 
 - **`<meta charset="UTF-8">`**: Specifies the character encoding for the document.
 - **`<meta name="description" content="Description of the page">`**: Provides a brief description of the page for search engines.
-- **`<meta name="keywords" content="keyword1, keyword2, keyword3">`**: Lists keywords relevant to the page for search engines.
+- **`<meta name="keywords" content="keyword1, keyword2, keyword3">`: Lists keywords relevant to the page. **Note:** This tag is now ignored by most major search engines, including Google.
 - **`<meta name="author" content="Author Name">`**: Specifies the author of the document.
 - **`<meta name="robots" content="index, follow">`**: Directs search engines on how to index and follow links on the page.
 
@@ -485,34 +485,22 @@ A basic HTML table includes the following elements:
 
 ## Table Attributes
 
-### 1. border
-The border attribute specifies the width of the border around the table.
+### Deprecated Table Attributes
+Attributes like `border`, `cellpadding`, `cellspacing`, `width`, and `height` were used in older versions of HTML to style tables. **These attributes are now deprecated.** Modern web standards require that all styling and layout should be handled with **CSS**.
 
-example:
-```html
-<table border="1">
-    <!-- Table content -->
-</table>
+**Correct, Modern Approach (using CSS):**
+```css
+table {
+    width: 100%;
+    border-collapse: collapse; /* Replaces cellspacing */
+}
+
+th, td {
+    border: 1px solid black; /* Replaces border attribute */
+    padding: 10px; /* Replaces cellpadding */
+}
 ```
-### 2. cellpadding and cellspacing
-The cellpadding attribute specifies the space between the cell content and the cell border, while cellspacing specifies the space between cells.
-
-example:
-```html
-<table cellpadding="10" cellspacing="5">
-    <!-- Table content -->
-</table>
-```
-
-### 3. width and height
-The width and height attributes specify the width and height of the table.
-
-example:
-```html
-<table width="100%" height="200">
-    <!-- Table content -->
-</table>
-```
+Using CSS provides much more control and separates the structure (HTML) from the presentation (CSS), which is a core principle of modern web development.
 ### Merging Cells
 
 #### 1. colspan
@@ -602,7 +590,7 @@ example:
 </html>
 ```
 # DEFER attribute
-The `defer` attribute is used to load a script asynchronously but ensures that the script is executed only after the HTML document has been completely parsed.
+The `defer` attribute is used to load a script asynchronously but ensures that the script is executed only after the HTML document has been completely parsed. This differs from the `async` attribute, which executes the script as soon as it's downloaded, without waiting for the HTML to finish parsing and without guaranteeing execution order.
 
 ```html
 <!DOCTYPE html>

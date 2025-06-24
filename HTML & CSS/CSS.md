@@ -51,7 +51,7 @@ Selects all elements with a specified class attribute.
 Selects the element with the specified ID
 
 ```css
-header {
+#header {
   background-color: lightblue;
 }
 ```
@@ -360,32 +360,65 @@ p {
 }
 ```
 
-# FLEX BOX
-Flex-box is a layout model that allows you to design complex layouts with ease, aligning items horizontally or vertically.
+# FLEXBOX
+Flexbox is a one-dimensional layout model that allows you to design complex layouts with ease, aligning items horizontally or vertically.
+
+### Key Container Properties
+- **`display: flex;`**: Enables flexbox layout.
+- **`flex-direction`**: Defines the main axis (`row`, `row-reverse`, `column`, `column-reverse`).
+- **`justify-content`**: Aligns items along the main axis (`center`, `flex-start`, `flex-end`, `space-between`, `space-around`).
+- **`align-items`**: Aligns items along the cross axis (`center`, `flex-start`, `flex-end`, `stretch`).
+- **`flex-wrap`**: Controls whether items wrap onto new lines (`nowrap`, `wrap`).
+- **`gap`**: Sets the space between flex items.
 
 ```css
 .container {
   display: flex;
+  flex-direction: row;
   justify-content: center; /* Align items horizontally */
   align-items: center;     /* Align items vertically */
-}
-
-.item {
-  flex: 1; /* Grow and shrink items as needed */
+  gap: 10px;
 }
 ```
-# GRID 
-CSS Grid Layout provides a two-dimensional grid-based layout system, allowing for more complex designs.
+
+### Key Item Properties
+- **`flex-grow`**: How much an item can grow relative to others.
+- **`flex-shrink`**: How much an item can shrink relative to others.
+- **`flex-basis`**: The initial size of an item.
+- **`flex`**: A shorthand for `flex-grow`, `flex-shrink`, and `flex-basis`.
+
+```css
+.item {
+  flex: 1; /* Shorthand for flex-grow: 1; flex-shrink: 1; flex-basis: 0%; */
+}
+```
+# GRID
+CSS Grid Layout provides a two-dimensional grid-based layout system, allowing for more complex designs with rows and columns.
+
+### Key Container Properties
+- **`display: grid;`**: Enables grid layout.
+- **`grid-template-columns`**: Defines the number and size of columns (e.g., `1fr 1fr`, `repeat(3, 1fr)`, `100px auto 100px`).
+- **`grid-template-rows`**: Defines the number and size of rows.
+- **`grid-template-areas`**: Allows you to name grid areas for easier item placement.
+- **`gap`**: Sets the space between grid items (replaces `grid-gap`).
 
 ```css
 .container {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Create two equal columns */
-  grid-gap: 10px; /* Space between grid items */
+  grid-template-columns: repeat(3, 1fr); /* Create three equal columns */
+  grid-template-rows: auto;
+  gap: 10px;
 }
+```
 
+### Key Item Properties
+- **`grid-column`**: Specifies which column(s) an item should span.
+- **`grid-row`**: Specifies which row(s) an item should span.
+- **`grid-area`**: Assigns an item to a named area defined by `grid-template-areas`.
+
+```css
 .item {
-  grid-column: span 1; /* Specify how many columns an item should span */
+  grid-column: span 2; /* Make this item span two columns */
 }
 ```
 
@@ -433,16 +466,35 @@ CSS Variables (Custom Properties) allow you to define reusable values in your st
 ```
 
 # CSS TRANSITIONS
-CSS transitions and animations are used to create dynamic visual effects and enhance the user experience by animating changes to CSS properties. Here’s a breakdown of each:
+CSS transitions provide a way to control animation speed when changing CSS properties. Instead of property changes taking effect immediately, you can cause changes to occur over a period of time.
 
-## Properties
-- `property`: The CSS property you want to animate (e.g., background-color, width).
-- `duration`: How long the transition takes (e.g., 0.5s, 200ms).
-- `timing-function`: The speed curve of the transition (e.g., linear, ease, ease-in, ease-out, ease-in-out).
-- `delay`: Delay before the transition starts (e.g., 0s, 1s).
+## Transition Properties
+- **`transition-property`**: The CSS property you want to animate (e.g., `background-color`, `width`, `transform`).
+- **`transition-duration`**: How long the transition takes (e.g., `0.5s`, `200ms`).
+- **`transition-timing-function`**: The speed curve of the transition (e.g., `linear`, `ease`, `ease-in`, `ease-out`).
+- **`transition-delay`**: Delay before the transition starts.
+- **`transition`**: A shorthand for all four properties.
 
-## TRANSFORM
-The transform property in CSS is used to apply various transformations to elements, such as scaling, rotating, translating, and skewing. This property allows you to change the appearance of an element without affecting its layout.
+### Example
+This example smoothly changes the background color of a button when the user hovers over it.
+
+```css
+.button {
+  background-color: #3498db;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  /* Shorthand transition for the background-color property over 0.3 seconds */
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #2980b9;
+}
+```
+
+# CSS TRANSFORMS
+The `transform` property lets you modify the coordinate space of the CSS visual formatting model. It allows you to translate, rotate, scale, and skew elements.
 
 ```css
 selector {
@@ -450,48 +502,48 @@ selector {
 }
 ```
 ### Transform Functions
-**translate(x, y)**
+**`translate(x, y)`**
 Moves the element from its original position.
-x: Horizontal movement (e.g., 10px, 50%).
-y: Vertical movement (e.g., 20px, 30%).
+- `x`: Horizontal movement (e.g., `10px`, `50%`).
+- `y`: Vertical movement (e.g., `20px`, `30%`).
 ```css
 .translate-example {
   transform: translate(50px, 20px);
 }
 ```
-**rotate(angle)**
+**`rotate(angle)`**
 
 Rotates the element around its origin.
-angle: The degree of rotation (e.g., 45deg, 1rad).
+- `angle`: The degree of rotation (e.g., `45deg`, `1rad`).
 ```css
 .rotate-example {
   transform: rotate(45deg);
 }
 ```
-**scale(x, y)**
+**`scale(x, y)`**
 
 Scales the element in the horizontal and vertical directions.
-x: Horizontal scale factor (e.g., 1.5 for 150%).
-y: Vertical scale factor (e.g., 2 for 200%).
+- `x`: Horizontal scale factor (e.g., `1.5` for 150%).
+- `y`: Vertical scale factor (e.g., `2` for 200%).
 ```css
 .scale-example {
   transform: scale(1.5, 0.5);
 }
 ```
-**skew(x, y)**
+**`skew(x, y)`**
 
 Skews the element along the x and y axes.
-x: Skew angle along the x-axis (e.g., 20deg).
-y: Skew angle along the y-axis (e.g., 10deg).
+- `x`: Skew angle along the x-axis (e.g., `20deg`).
+- `y`: Skew angle along the y-axis (e.g., `10deg`).
 
 ```css
 .skew-example {
   transform: skew(20deg, 10deg);
 }
 ```
-**matrix(a, b, c, d, e, f)**
+**`matrix(a, b, c, d, e, f)`**
 Applies a 2D transformation using a matrix.
-a, b, c, d, e, f: Values for the matrix transformation.
+- `a, b, c, d, e, f`: Values for the matrix transformation.
 
 ```css
 .matrix-example {

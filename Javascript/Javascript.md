@@ -1,6 +1,6 @@
 # JAVASCRIPT
 
-JavaScript is a Dynamic,Single-threaded ,Interpreted (code executed line by line by an interpreters) Programming language with First class Functions ,It is most well known scripting language for Web pages ,also many non-browser environment also use it like Node.js .
+JavaScript is a Dynamic, Single-threaded, Interpreted Programming language with First-class Functions. It is the most well-known scripting language for Web pages, and many non-browser environments also use it, like Node.js. While traditionally interpreted, modern JavaScript engines use Just-In-Time (JIT) compilation to improve performance by compiling code to machine code at runtime.
 
 **JavaScript is a dynamically typed Language** ie, variable types are determined at runtime so we don't want to specify data type
 
@@ -23,7 +23,7 @@ examples:
 Variables are containers for storing data values.You can declare a variable with **var**, **let** or **const** keywords.
 
 - Variable names include letters,digits, underscores, and dollar signs
-- Variable names can't start with letters.
+- Variable names must start with a letter, underscore (_), or dollar sign ($). They cannot start with a number.
 - JS is case-sensitive language , so `myVar` and `myvar` are different variable.
 - Always prefer `let`,and `const` over `var` for avoiding scoping and hoisting issues
 
@@ -272,10 +272,11 @@ Primitive data types are most basic data types, They are immutable meaning cant 
 4. **Null:** Represent intentional absence
 5. **Undefined:** Represent a variable that has been declared but not assigned a value;
 6. **Symbol:** Represents a unique and immutable identifier.
+7. **BigInt:** Represents integers of arbitrary precision, for numbers too large to be represented by the `Number` type.
 
 ### NON-PRIMITIVE DATA TYPES
 
-Non primitive data types are objects. Unlike primitive data types , they can hold collections of values and more complex entities
+Non-primitive data types (also known as reference types) are more complex. The core non-primitive type is the **Object**. Other non-primitive types like `Array`, `Function`, `Date`, etc., are all special kinds of objects
 
 1. **Object**
    Represent a collection of `key-value` pair
@@ -330,11 +331,21 @@ this leads into reference errors
 
 In JS Nan stands for "Not a Number" , and means by computational results cant be expressed as a meaningful Number
 
-**isNan function** -- this function convert the value to a number and checks if it is a `Nan`
+**isNaN() function**
+
+The global `isNaN()` function converts its argument to a number and then checks if the result is `NaN`. This can lead to unexpected behavior.
 
 ```js
 console.log(isNaN(NaN)); // Output: true
 console.log(isNaN("hello")); // Output: true (because Number("hello") is NaN)
+console.log(isNaN(123)); // Output: false
+```
+
+A more reliable alternative is `Number.isNaN()`, which does not perform type coercion and only returns `true` if the value is actually `NaN`.
+
+```js
+console.log(Number.isNaN("hello")); // Output: false
+console.log(Number.isNaN(NaN)); // Output: true
 console.log(isNaN(123)); // Output: false
 ```
 
@@ -732,19 +743,16 @@ let substring = str.slice(6);
 console.log(substring); // "world"
 ```
 10. ### substring()
-Similar to `slice()`, but handles negative indices differently.
+Similar to `slice()`, but it treats negative indices as `0`.
 
 ```js
 let str = "hello world";
 
-// Using slice()
-let substring1 = str.slice(6, 11); // "world"
-let substring2 = str.slice(-5, -1); // "world"
-
 // Using substring()
-let substring3 = str.substring(6, 11); // "world"
-let substring4 = str.substring(-5, -1); // "world" (same as substring3)
+let substring1 = str.substring(6, 11); // "world"
 
+// Negative indices are treated as 0
+let substring2 = str.substring(-5, 5); // "hello" (same as str.substring(0, 5))
 ```
 
 # FUNCTIONS IN JS
@@ -838,14 +846,13 @@ console.log(applyOperation(5, 3, multiply)); // Output: 15
 
 ## Eval Functions
 
-The Eval function in JS is able to read strings which must be an expression or formula . It basically reads and evaluate if tng might be a calculation
-In strict mode, declaring a variable named eval or re-assigning eval is a SyntaxError
-example:
+The `eval()` function evaluates a string of JavaScript code. It can execute any JavaScript expression or statement.
 
 ```js
 console.log(eval("2 + 2"));
 // Expected output: 4
 ```
+**Warning:** Using `eval()` is strongly discouraged. It poses significant security risks because it can execute malicious code passed as a string. It also has poor performance compared to other alternatives. Avoid it whenever possible.
 
 ## Pure Functions
 
@@ -947,7 +954,7 @@ person2.greet(); // Output: Hello, my name is Bob and I am 25 years old.
 
 ## CONSTRUCTOR FUNCTION
 
-Constructor function in Java helps to create multiple instance of objects ,When you use the new keyword with a constructor function, it creates a new object, sets the this context to the new object, and allows you to add properties and methods to that object.
+Constructor functions in JavaScript help to create multiple instances of objects ,When you use the new keyword with a constructor function, it creates a new object, sets the this context to the new object, and allows you to add properties and methods to that object.
 
 ```js
 // Constructor function
@@ -1174,7 +1181,7 @@ const obj = {
   },
 };
 
-Object.freeze(obj);
+Object.seal(obj);
 
 obj.a = 6; // Allowed
 delete obj.b; // No effect
@@ -1198,30 +1205,30 @@ In JS `this` keyword is reference to something like object.
 but this keyword work differently in different scenarios , like check in case of an object with normal function
 
 ```js
-let user ={
-name= 'Aswanth',
-age:26,
-function getName(){
-    console.log(this.name)
-}
-}
-user.getName() //print Aswanth in console
+let user = {
+  name: "Aswanth",
+  age: 26,
+  getName: function () {
+    console.log(this.name);
+  },
+};
+user.getName(); //print Aswanth in console
 ```
 
 lets go into more complex object
 
 ```js
-let user ={
-name= 'Aswanth',
-age:26,
-childObj:{
-    nickname:"Ash"
-    function getName(){
-    console.log(this.name ,"and",this.nickname)
-}
-}
-}
-user.childObj.getName() //print 'undefined and Ash' in console
+let user = {
+  name: "Aswanth",
+  age: 26,
+  childObj: {
+    nickname: "Ash",
+    getName: function () {
+      console.log(this.name, "and", this.nickname);
+    },
+  },
+};
+user.childObj.getName(); //print 'undefined and Ash' in console
 
 ```
 
@@ -1230,14 +1237,14 @@ in this case the `this` in referenced only to childObj , ie incase of normal fun
 Now Lets check the same with Arrow functions
 
 ```js
-let user ={
-name= 'Aswanth',
-age:26,
-getName:()=>{
-    console.log(this.name)
-}
-}
-user.getName() //print nothing
+let user = {
+  name: "Aswanth",
+  age: 26,
+  getName: () => {
+    console.log(this.name);
+  },
+};
+user.getName(); //print nothing
 
 ```
 
@@ -1558,13 +1565,17 @@ console.log(fruits.length); // Output: 3
 ```
 
 6. ### forEach()
-   Creates a new array with the results of calling a function for every array element.
+   Executes a provided function once for each array element. It does not return a new array (it returns `undefined`).
 
 ```js
-let upperCaseFruits = fruits.map(function (fruit) {
-  return fruit.toUpperCase();
+let fruits = ["Apple", "Banana", "Cherry"];
+fruits.forEach(function (fruit) {
+  console.log(fruit);
 });
-console.log(upperCaseFruits); // Output: ["APPLE", "BLUEBERRY", "CHERRY"]
+// Output:
+// Apple
+// Banana
+// Cherry
 ```
 
 7. ### join()
@@ -1642,7 +1653,7 @@ console.log(slicedFruits); // Output: ["Banana", "Cherry"]
 console.log(fruits); // Output: ["Apple", "Banana", "Cherry", "Date"]
 ```
 
-14. ### splice()
+15. ### splice()
     Changes the contents of an array by removing, replacing, or adding elements. It modifies the original array
     `array.splice(start, deleteCount, item1, item2, ...)`
 
