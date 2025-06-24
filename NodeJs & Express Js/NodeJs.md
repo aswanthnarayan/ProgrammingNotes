@@ -66,7 +66,7 @@ Event-Driven Architecture (EDA) is a software design pattern where applications 
 * **Flexibility**: New systems can be easily added or removed without affecting existing ones.
 * **Improved Efficiency**: By focusing on events, systems can optimize resource utilization.
 
-# MODULE VIEW CONTROLLER (MVC)
+# MODEL-VIEW-CONTROLLER (MVC)
 
 MVC is a software architecture pattern commonly used for developing user interfaces.
 It divides the related program logic into three interconnected parts:
@@ -94,8 +94,8 @@ It divides the related program logic into three interconnected parts:
 
 # MODULES
 
-A module is a encapsulated and reusable chunk of code that has its own context.
-In Node Js each file is treated as a separate modules
+A module is an encapsulated and reusable chunk of code that has its own context.
+In Node.js each file is treated as a separate module
 
 * Modules help you avoid naming conflicts by creating a separate scope for your variables and functions.
 * Make your code more modular and maintainable by breaking it down into smaller and simpler units
@@ -108,7 +108,7 @@ CommonJS is a module standard used in Node.js that defines how modules should be
 
 ## module.exports
 
-`module.exports` is an in build object that allows to export functions , objects or variable from one module to another
+`module.exports` is a built-in object that allows to export functions , objects or variable from one module to another
 we can export multiple thing as properties of object or a single item directly
 other modules can access these export using `require` function
 
@@ -160,7 +160,7 @@ const addFunction = require("./add");
 
 ```
 
-this also works fine . This type of export is known as a **default export**
+this also works fine.  CommonJS simply returns whatever value you assign to `module.exports`; in ES-Modules this pattern most closely resembles **default export**, but that term is not used in CommonJS.
 
 You can Pass Multiple functions also using `module.exports`
 
@@ -222,14 +222,15 @@ console.log(greetings.sayGoodbye("Bob")); // Outputs: Goodbye, Bob!
 
 - `exports` and `module.exports` both point to the same object
 
-- The key deference is Assigning a new value to `exports` break connection to `module.exports`
+- The key deference is Assigning a new value to `exports` breaks the connection to `module.exports`
 
 - Assigning a New Value to exports breaks the link between exports and module.exports, so only the original module.exports object (which is likely empty) gets exported.
 
 ```js
 // greetings.js
 
-module.exports = function (name) {
+// Re-assigning `exports` breaks the link with `module.exports`
+exports = function (name) {
   return `Hello, ${name}!`;
 };
 ```
@@ -343,8 +344,7 @@ const exportedObj2 = require("./app");
 console.log(exportedObj2.number); // output 11
 ```
 
-although its a great thing for performance in certain cases we need to avoid module caching
-for that we can return the `module.export` as a function so for each instance have separate memory
+While module caching is great for performance, sometimes you need to create a fresh instance of an object from a module. You can achieve this by exporting a function (a factory) that returns a new object each time it's called. The module itself is still cached, but you get a unique object with every invocation.
 
 **example:**
 
@@ -476,19 +476,18 @@ console.log(data);
 // output will because
 
 // {
-//  name:"Aswanth",
-//   age:26
+//   name: "Aswanth",
+//   age: 26
 // }
 ```
 
-while importing json file always use `.json` notation , because if there a `js` file with same name in the folder the nod will give precedence to `.js` file .
-
+While importing a JSON file, always use the `.json` notation, because if there is a `.js` file with the same name in the folder, Node will give precedence to the `.js` file.
 
 # TYPES OF MODULES
 
-1. **LOCAL MODULE:** Custom Modules that are created in our application
-2. **BUILT-IN-MODULES** Modules that come with the Node.js installation
-3. **THIRD PARTY MODULES:** These are modules that are developed by other developers and published on npm, the Node.js package manager
+1. **LOCAL MODULE:** Custom modules that are created in our application.
+2. **BUILT-IN MODULES:** Modules that come with the Node.js installation.
+3. **THIRD-PARTY MODULES:** These are modules that are developed by other developers and published on npm, the Node.js package manager.
 
 # LOCAL MODULES
 
@@ -542,7 +541,7 @@ Hello world
 Built-in Modules are modules Node.js ships with . It also referred as Core modules .
 You need to import built-in modules before use
 
-There are many Built-in modules but these are the 5 essential
+There are many built-in modules, but here are five essential ones
 
 1. path
 2. events
@@ -604,7 +603,8 @@ console.log(fullPath); // Output: '/user/local/bin/file.txt'
 
 ```js
 const absolutePath = path.resolve("user", "local", "bin");
-console.log(absolutePath); // Output: '/current/working/directory/user/local/bin'
+// Returns an absolute path starting from the *current working directory*.
+console.log(absolutePath); // e.g. '/home/me/project/user/local/bin'
 ```
 
 6. **path.isAbsolute(path):**
@@ -742,6 +742,9 @@ console.log(emitter.getMaxListeners()); // Output: 20 (after using setMaxListene
 8. **emitter.listenerCount(eventName):**
    Returns the number of listeners listening to the specified event.
 
+9. **emitter.off(eventName, listener):**
+   Alias of `removeListener()`. Removes a previously registered listener. Returns the `EventEmitter` object so that calls can be chained.
+
 ```js
 console.log(emitter.listenerCount("greet")); // Output: 1 (as one listener was added)
 ```
@@ -800,7 +803,9 @@ Current order Number = 1
 
 ## FS MODULE
 
-The File System (`fs`) module allows you to work with the file system on your computer. The fs module has methods that perform both synchronously and asynchronously. Synchronous methods will block (wait) until the file operation is completed before moving to the next line. That's why you should always consider asynchronous methods.
+The File System (`fs`) module allows you to work with the file system on your computer. The fs module has methods that perform both synchronously and asynchronously. Synchronous methods will block (wait) until the file operation is completed before moving to the next line.
+
+**Warning:** Synchronous methods like `readFileSync` block the entire Node.js process, including the event loop. This means no other code can run until the file operation is complete. **Never use synchronous I/O methods in a server environment** or any application that needs to handle concurrent requests, as it will severely degrade performance.
 
 
 **CHARACTER SET**
@@ -1125,7 +1130,7 @@ server.listen(3000, () => {
 
 - Setting the Content-Type to "application/json" tells the client that the response is in JSON format, which is important for the client to correctly interpret the data.
 
-### PASS OBJECT INTO SERVER
+### SERVING HTML FILES
 
 ```js
 const http = require("node:http");
@@ -1244,21 +1249,23 @@ server.listen(3000, () => {
 
 ```
 
-## PROMISE MODULE
+## PROMISES (`fs/promises`)
 
 The Promise module in Node.js provides a way to handle asynchronous operations more elegantly, avoiding the so-called "callback hell" or "pyramid of doom.
 
 ```js
-const fs = require("fs").promises; // Using the built-in promise version of fs
+const fs = require("node:fs/promises");
 
-// Reading a file using Promises
-fs.readFile("example.txt", "utf8")
-  .then((data) => {
+async function readFileExample() {
+  try {
+    const data = await fs.readFile("example.txt", "utf8");
     console.log("File content:", data);
-  })
-  .catch((error) => {
+  } catch (error) {
     console.error("Error reading file:", error);
-  });
+  }
+}
+
+readFileExample();
 ```
 
 
