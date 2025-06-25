@@ -23,7 +23,7 @@ age = "hello"; // Error: Type 'string' is not assignable to type 'number'.
 
 Typescript knows javascript language and will generate types automatically most of the time , this is called inference .but you can also specify types explicitly
 
-```js
+```ts
 let helloWorld = "Hello World";
 ``` 
 *Above line is inferred to be string*
@@ -65,16 +65,18 @@ console.log(strLength1); // 16
 let value: any = "Hello, TypeScript";
 
 // Method 2: Using `<type>` syntax
-let strLength2: number = value.length;
+let strLength2: number = (<string>value).length;
 console.log(strLength2); // 16
 ```
 - Both methods tell TypeScript that value is a string, so we can safely access .length.
 
 - The `<Type>` syntax does not work in JSX/TSX files (React projects), so as syntax is preferred.
 
-## Type Casting
-- Type Casting is the process of converting a variable from one type to another at runtime.
-- Unlike Type Assertion, which only tells TypeScript the type without changing it, Type Casting actually converts the value.
+## Type Casting vs. Type Assertion
+It's important to distinguish between **Type Assertion** (a compile-time instruction for TypeScript) and **Type Casting** (a runtime conversion of a value).
+
+- **Type Assertion** tells the compiler, "Trust me, I know the type of this value," without changing the runtime value. It's a TypeScript-only concept.
+- **Type Casting** actually converts a value from one type to another at runtime, using JavaScript's built-in functions like `String()`, `Number()`, etc.
 
 ```ts
 let num: number = 42;
@@ -230,8 +232,27 @@ something = 23;
 something = true;
 ```
 
+8. ### unknown
 
-8. ### Void
+The `unknown` type is a type-safe alternative to `any`. Like `any`, a variable of type `unknown` can hold any value. However, TypeScript will not let you perform any operations on an `unknown` value until you first narrow its type using a type guard (like `typeof` or `instanceof`).
+
+```ts
+let value: unknown = "Hello World";
+
+// Error: 'value' is of type 'unknown'.
+// console.log(value.length);
+
+// This is safe because we've checked the type first
+if (typeof value === 'string') {
+  console.log(value.length); // OK
+}
+```
+
+Using `unknown` is always recommended over `any` when the type of a value is not known beforehand.
+```
+
+
+9. ### Void
 
 `void` type is used where there is no data. For example, if a function does not return any value then you can specify void as return type
 
@@ -248,7 +269,7 @@ let nothing: void = undefined;
 let num: void = 1; // Error
 ```
 
-9. ### Null and Undefined
+10. ### Null and Undefined
 
 In TypeScript, both `null` and `undefined` have their own distinct types: null and undefined. However, similar to void, they are not particularly useful on their own:
 
@@ -265,7 +286,7 @@ If a variable should accept string, null, or undefined, you can explicitly defin
 let value: string | null | undefined;
 ```
 
-10. ### Never
+11. ### Never
 
 - The `never` type represents the type of values that never occur.
 - The never type represents values which are never observed. In a return type, this means that the function throws an exception or terminates execution of the program
@@ -292,7 +313,7 @@ function fn(x: string | number) {
 }
 ```
 
-11. ### Object
+12. ### Object
 
 In TypeScript, the object type represents non-primitive values, meaning it includes anything that is not a `number`, `string`, `boolean`, `bigint`, `symbol`, `null`, or `undefined`.
 
@@ -344,7 +365,7 @@ type EmployeeDetails = Person & Employee; // Intersection type
 const employee: EmployeeDetails = {
   name: "Alice",
   id: 101
-}; // ✅ Valid: Has both 'name' and 'id'
+}; // Valid: Has both 'name' and 'id'
 ```
 
 - They merge multiple types, ensuring that the result has all the required properties.
@@ -409,12 +430,14 @@ A union type is TypeScript's way of saying that a value can be "either this type
 
 This situation comes up in JavaScript all the time. Imagine you have a value that is a string on Tuesdays, but null the rest of the time:
 
-in Javascript 
+In JavaScript, a function might return different types:
 
 ```js
-const message = Date.now() % 2 === 0 ? 'Hello Tuesdays!' : null
-        
-const message: "Hello Tuesdays!" | null
+function getMessage() {
+  return Date.now() % 2 === 0 ? 'Hello Tuesdays!' : null;
+}
+
+const message = getMessage(); // Inferred type in TS would be 'string | null'
 ```
 
 - In TypeScript, you can do the same thing using a union type:
@@ -512,7 +535,7 @@ The Pick utility type allows you to create a new object type by picking certain 
 
 For example, say we want to create a new type that only includes the `title` and `artist` properties from the `Album` type:
 
-```js
+```ts
 type AlbumData = Pick<Album, "title" | "artist">;
 ```
 - This results in `AlbumData` being a type that only includes the `title` and `artist` properties.
@@ -551,12 +574,26 @@ const freezePerson = (person: Readonly<Person>) => {
    person.age = 30; // Error: Cannot assign to 'age' because it is a read-only property
 };
 
-const user: Readonly<Person> = { name: "Alice", age: 25 };
+const user: Person = { name: "Alice", age: 25 };
 
 // This function can read properties but not modify them
 freezePerson(user);
 
 ```
+
+While the `Readonly<T>` utility type is useful for making all properties of a type readonly, you can also use the `readonly` modifier to mark individual properties.
+
+```ts
+interface User {
+    readonly id: number;
+    name: string;
+}
+
+const user: User = { id: 1, name: "Alice" };
+user.name = "Bob"; // OK
+// user.id = 2; // Error: Cannot assign to 'id' because it is a read-only property.
+```
+
 6. ### Generic Types 
 
 **Generics:**
@@ -698,6 +735,32 @@ const person1 = new Person("Alice", 25);
 person1.greet(); // ✅ "Hello, my name is Alice and I am 25 years old."
 ```
 
+### The `implements` Keyword
+
+A class can use the `implements` keyword to ensure it conforms to the shape of an `interface`. This is a core feature for writing contract-based code.
+
+```ts
+interface Printable {
+  print(): void;
+}
+
+class Document implements Printable {
+  title: string;
+
+  constructor(title: string) {
+    this.title = title;
+  }
+
+  print(): void {
+    console.log(`Printing document: ${this.title}`);
+  }
+}
+
+const doc = new Document("My Report");
+doc.print(); // ✅ "Printing document: My Report"
+```
+```
+
 ## Implementation of OOPs Principles
 
 ### Encapsulation
@@ -831,7 +894,7 @@ console.log(myCircle.getArea()); // ✅ 78.54
 | **Can Have a Constructor?**                        | NO                                                    | YES                                         | YES                                             |
 | **Can Have Properties With Values?**               | NO (only declarations)                                | YES                                         | YES                                             |
 | **Access Modifiers (public, private, protected)?** | NO                                                    | YES                                         | YES                                             |
-| **Can Extend Another Class?**                      | NO (but can extend another interface)                 | YES (extends)                               | YES (extends)                                   |
+| **Can Extend Another Class?**                      | YES (inherits structure, not implementation)          | YES (extends)                               | YES (extends)                                   |
 | **Can Implement an Interface?**                    | YES (implements)                                      | YES (implements)                            | YES (implements)                                |
 | **Can a Class Extend Multiple?**                   | Yes (Multiple implements)                             | NO (Only one extends)                       | NO (Only one extends)                           |
 | **Can Be Instantiated (Used to Create Objects)?**  | NO                                                    | YES                                         | NO (must be extended by a subclass)             |
@@ -859,9 +922,9 @@ class BankAccount {
 }
 
 const account = new BankAccount();
-account.balance = 1000; // ✅ Sets balance
-console.log(account.balance); // ✅ Gets balance (1000)
-account.balance = -500; // ❌ "Invalid balance amount."
+account.balance = 1000; // Sets balance
+console.log(account.balance); // Gets balance (1000)
+account.balance = -500; // "Invalid balance amount."
 ```
 
 # Important Topics
@@ -904,8 +967,8 @@ console.log(multiply(5, 10)); // ✅ 50
 ```
 *Here, MathOperation is a function signature, ensuring that add and multiply both accept two numbers and return a number.*
 
-## Duck Typing
-Duck typing is a concept in TypeScript (and other dynamically typed languages) where an object's type is determined by its shape (properties and methods) rather than explicitly declaring its type.
+## Duck Typing (Structural Typing)
+Duck typing is a concept where an object's type is determined by its shape (properties and methods) rather than explicitly declaring its type. TypeScript has a **structural type system**, which is a formal implementation of this concept.
 
 - In TypeScript, if an object has the required properties and methods of a type, it is considered to be of that type, even if it wasn’t explicitly declared as such.
 
@@ -922,7 +985,7 @@ console.log(addNumbers(5, 10)); // 15
 
 *Since addNumbers matches the function signature of Add, it is automatically considered of type Add.*
 
-or Duck Typing Restriction
+### Structural Mismatch (When Duck Typing Fails)
 
 ```ts
 interface Car {
@@ -959,7 +1022,7 @@ Example: Without Narrowing (Causes Error)
 
 ```ts
 function printLength(value: string | number) {
-  console.log(value.length); // ❌ Error: Property 'length' does not exist on type 'number'.
+  console.log(value.length); // Error: Property 'length' does not exist on type 'number'.
 }
 ```
 
@@ -969,14 +1032,14 @@ Use typeof to check primitive types before performing operations.
 ```ts
 function printLength(value: string | number) {
   if (typeof value === "string") {
-    console.log(`String length: ${value.length}`); // ✅ Allowed
+    console.log(`String length: ${value.length}`); // Allowed
   } else {
-    console.log(`Number: ${value}`); // ✅ Allowed
+    console.log(`Number: ${value}`); // Allowed
   }
 }
 
-printLength("Hello"); // ✅ "String length: 5"
-printLength(42);      // ✅ "Number: 42"
+printLength("Hello"); // "String length: 5"
+printLength(42);      // "Number: 42"
 ```
 
 ### 2. Type Guard Narrowing (instanceof)
@@ -1023,7 +1086,7 @@ function checkUser(user: User | Admin) {
 }
 
 const admin: Admin = { name: "Alice", permissions: ["read", "write"] };
-checkUser(admin); // ✅ "Admin permissions: read, write"
+checkUser(admin); // "Admin permissions: read, write"
 ```
 ## Mixins
 Mixins are a way to combine multiple class behaviors into a single class without using traditional inheritance.
@@ -1067,8 +1130,8 @@ class Animal {
 class Dog extends CanEat(CanSleep(Animal)) {}
 
 const myDog = new Dog("Buddy");
-myDog.eat();  // ✅ "Eating..."
-myDog.sleep(); // ✅ "Sleeping..."
+myDog.eat();  // "Eating..."
+myDog.sleep(); // "Sleeping..."
 ```
 
 *Dog now has eat() and sleep() methods without directly inheriting them.*
@@ -1223,18 +1286,18 @@ const person: Person = { name: "Bob" };
 ## Arrays
 ```ts
 const numbers: number[] = [1, 2, 3];
-console.log(numbers[0]); // ✅ 1
+console.log(numbers[0]); // 1
 ```
 ## Tuples
 ```ts
 const person: [string, number] = ["Alice", 25];
-console.log(person[0]); // ✅ "Alice"
+console.log(person[0]); // "Alice"
 ```
 ## Enums
 ```ts
 enum Status { Active, Inactive }
 const userStatus: Status = Status.Active;
-console.log(userStatus); // ✅ 0 (index)
+console.log(userStatus); // 0 (index)
 ```
 ### Union Types
 ```ts
@@ -1254,45 +1317,45 @@ const user: User = { name: "Alice", age: 25 };
 function add(a: number, b: number): number {
   return a + b;
 }
-console.log(add(2, 3)); // ✅ 5
+console.log(add(2, 3)); // 5
 ```
 ### 2.Anonymous Function
 ```ts
 const multiply = function (a: number, b: number): number {
   return a * b;
 };
-console.log(multiply(2, 3)); // ✅ 6
+console.log(multiply(2, 3)); // 6
 ```
 ### 3. Arrow Function
 ```ts
 const subtract = (a: number, b: number): number => a - b;
-console.log(subtract(5, 2)); // ✅ 3
+console.log(subtract(5, 2)); // 3
 ```
 ## Rest Parameters (...args)
 ```ts
 function sum(...nums: number[]): number {
   return nums.reduce((acc, num) => acc + num, 0);
 }
-console.log(sum(1, 2, 3)); // ✅ 6
+console.log(sum(1, 2, 3)); // 6
 ```
 ## Spread Operator
 ```ts
 const arr1 = [1, 2];
 const arr2 = [...arr1, 3, 4];
-console.log(arr2); // ✅ [1, 2, 3, 4]
+console.log(arr2); // [1, 2, 3, 4]
 ```
 ## Promises
 ```ts
 const fetchData = (): Promise<string> => {
   return new Promise((resolve) => setTimeout(() => resolve("Data loaded"), 1000));
 };
-fetchData().then(console.log); // ✅ "Data loaded"
+fetchData().then(console.log); // "Data loaded"
 ```
 ## Async/Await
 ```ts
 async function getData() {
   const data = await fetchData();
-  console.log(data); // ✅ "Data loaded"
+  console.log(data); // "Data loaded"
 }
 getData();
 ```
@@ -1312,19 +1375,19 @@ class Dog extends Animal {
 }
 
 const dog = new Dog("Buddy");
-dog.makeSound(); // ✅ "Woof!"
+dog.makeSound(); // "Woof!"
 ```
 ## Generics
 ```ts
 function identity<T>(value: T): T {
   return value;
 }
-console.log(identity<number>(10)); // ✅ 10
-console.log(identity<string>("Hello")); // ✅ "Hello"
+console.log(identity<number>(10)); // 10
+console.log(identity<string>("Hello")); // "Hello"
 ```
 ## Type Assertion
 ```ts
 let value: any = "Hello";
 let strLength: number = (value as string).length;
-console.log(strLength); // ✅ 5
+console.log(strLength); // 5
 ```
