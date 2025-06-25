@@ -26,7 +26,7 @@ SQL (Structured Query Language) and NoSQL (Not Only SQL) databases are two major
 
 - NoSQL databases can be document-based, key-value stores, column-family stores, or graph databases, allowing for a more flexible data model.
 - NoSQL databases are typically schema-less or have a dynamic schema, meaning they can store unstructured or semi-structured data. This flexibility allows for easier modifications and varied data structures
-- NoSQL databases often store data in a demoralized form, with related data embedded within the same document or object, reducing the need for complex joins.
+- NoSQL databases often store data in a denormalized form, with related data embedded within the same document or object, reducing the need for complex joins.
 
 ### Ideal For:
 
@@ -99,6 +99,8 @@ mongod;
 
 By default, it starts the server on port `27017` and uses the default data directory (`/data/db` on Linux/macOS or `C:\data\db` on Windows).
 
+_Note: `mongod` is the database server process. To interact with the database, you use a shell client. The modern shell is `mongosh`, which replaced the legacy `mongo` shell._
+
 ## BSON
 
 BSON is a binary encoding of JSON-like documents. Unlike JSON, which is text-based, BSON is designed to be efficient in both storage and retrieval, making it more suitable for high-performance applications.
@@ -169,7 +171,7 @@ MongoDB provides two types of data models:
 
 ### Embedded Data Model (de-normalized)
 
-In this model, you can have (embed) all the related data in a single document, it is also known as de-normalized data model.
+In this model, you can have (embed) all the related data in a single document; it is also known as a denormalized data model.
 
 **For example:** assume we are getting the details of employees in three different documents namely, 'Personal_details', 'Contact' and, 'Address', you can embed all the three documents in a single one
 
@@ -228,7 +230,7 @@ db.books.insertOne({
 });
 ```
 
-- **Explicit Creation\***
+- **Explicit Creation**
 
 ```js
 db.createCollection("books");
@@ -285,9 +287,9 @@ db.books.find();
 2. **Find with Filter:**
 
 ```js
-db.books.find({ author: "Author 1" });
+db.books.find({ author: "author 1" });
 
-// return all documents with author === Author 1
+// Returns all documents where author is "author 1" (case-sensitive)
 ```
 
 3. **Select Specific Fields**
@@ -359,10 +361,14 @@ db.books.distinct("genre", { rating: 9 });
 
 1. **Count Documents:**
 
-```js
-db.books.find().count();
+The `count()` method is deprecated. Use `countDocuments()` for accurate counts based on a query, or `estimatedDocumentCount()` for a fast count of all documents in a collection.
 
-// return a number which the count of total documents
+```js
+// Get an accurate count of documents matching a filter
+db.books.countDocuments({ rating: { $gt: 8 } });
+
+// Get a fast, estimated count of all documents in the collection
+db.books.estimatedDocumentCount();
 ```
 
 2. **Limit the Number of Results:**
@@ -485,7 +491,17 @@ db.books.find({
 // Returns documents where the rating is greater than or equal to 8 and the genre includes "genre1"
 ```
 
+3. **$exists**
 
+   Matches documents that have (or do not have) a specified field.
+
+```js
+// Find all documents that have the 'rating' field
+db.books.find({ rating: { $exists: true } });
+
+// Find all documents that DO NOT have the 'rating' field
+db.books.find({ rating: { $exists: false } });
+```
 
 ### Querying Nested Documents
 
@@ -652,10 +668,10 @@ The `$elemMatch` operator matches documents where at least one element in the ar
 
 ```js
 db.books.find({
-  reviews: { $elemMatch: { rating: { $gte: 8 }, reviewText: /excellent/i } },
+  reviews: { $elemMatch: { rating: { $gte: 4 }, user: "User1" } },
 });
 
-// Returns documents where at least one review in the reviews array has a rating of 8 or higher and contains the word "excellent"
+// Returns documents where at least one review in the reviews array has a rating of 4 or higher AND was written by "User1"
 ```
 
 10. **$slice**
@@ -711,18 +727,27 @@ db.books.updateOne(
 
 ### Field Update Operators
 
-Field update operators allow you to modify specific fields in documents. These operators are often used with update methods like `updateOne()` and `updateMany()`.
+Field update operators modify specific fields in documents. They are used with methods like `updateOne()` and `updateMany()`.
 
-1. **$inc**
+1. **$set**
 
-The `$inc` operator increases the value of a field by a specified amount. If the field does not exist, it will be created.
+The `$set` operator replaces the value of a field with the specified value. If the field does not exist, `$set` will add a new field with the specified value.
+
+```js
+db.books.updateOne({ title: "Book1" }, { $set: { rating: 10 } });
+// Sets the rating of "Book1" to 10
+```
+
+2. **$inc**
+
+The `$inc` operator increments the value of a field by a specified amount. If the field does not exist, it will be created.
 
 ```js
 db.books.updateOne({ title: "Book1" }, { $inc: { rating: 1 } });
 // Increases the rating of "Book1" by 1
 ```
 
-2. **$mul**
+3. **$mul**
 
 The `$mul` operator multiplies the value of a field by a specified amount.
 
@@ -731,7 +756,7 @@ db.books.updateOne({ title: "Book1" }, { $mul: { rating: 2 } });
 // Doubles the rating of "Book1"
 ```
 
-3. **$rename**
+4. **$rename**
 
 The `$rename` operator changes the name of a field in a document.
 
@@ -740,7 +765,7 @@ db.books.updateOne({ title: "Book1" }, { $rename: { author: "writer" } });
 // Renames the "author" field to "writer" in the "Book1" document
 ```
 
-4. **$unset**
+5. **$unset**
 
 The `$unset` operator deletes a specified field from a document.
 
@@ -749,17 +774,14 @@ db.books.updateOne({ title: "Book1" }, { $unset: { rating: "" } });
 // Removes the "rating" field from the "Book1" document
 ```
 
-5. **$exists**
+6. **$currentDate**
 
-The `$exists` operator in MongoDB is used to query documents based on whether a specific field exists or not in the document
+The `$currentDate` operator sets the value of a field to the current date, either as a `Date` or a `Timestamp`.
 
 ```js
-db.books.find({ "author": { $exists: true } })
-
-//return all documents in the books collection where the author field exists
+db.books.updateOne({ title: "Book1" }, { $currentDate: { lastModified: true } });
+// Sets the 'lastModified' field to the current date
 ```
-6. **$add** 
- 
 
 ### Geospatial Queries
 
@@ -1329,16 +1351,9 @@ Collections that are distributed across multiple shards in a MongoDB cluster. Sh
   
    Large-scale applications requiring horizontal scaling, such as those with massive datasets or high-throughput operations.
 
-### TTL (Time to Live) Collections
+### Collections with TTL Indexes
 
-Collections with documents that automatically expire after a specified period, defined by a TTL index on a date field.
-
-- **Automatic Expiration:** Documents are automatically removed once they exceed the TTL value.
-- **No Manual Deletion Required:** MongoDB handles the deletion process, which helps manage data retention policies.
-
-**Use Case:** 
-
-Applications where data has a natural expiration, such as session management, temporary logs, or cached data.
+While not a distinct collection type, it's a common pattern to create collections where documents expire automatically. This is achieved by creating a **TTL (Time-to-Live) index** on a date field, as explained in the "Indexing" section. This pattern is often used for session management, logs, and caching.
 
 ### Clustered Collections
 

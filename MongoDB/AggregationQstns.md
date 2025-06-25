@@ -119,8 +119,8 @@ db.persons.aggregate([
 
 ```js
 db.persons.aggregate([
-  { $sort: { registered: -1 } }, // Sorts documents by the "registered" field in descending order (most recent first)
-  { $limit: 1 }, // Limits the output to the top 1 document, which is the latest registered user
+  { $sort: { registered: 1 } }, // Sorts documents by the "registered" field in ascending order (oldest first)
+  { $limit: 1 }, // Limits the output to the top 1 document, which is the earliest registered user
 ]);
 ```
 
@@ -164,6 +164,21 @@ db.persons.aggregate([
 
 9. How many users were registered after '2020-01-01'?
 
+ans:
+
+```js
+db.persons.aggregate([
+  {
+    $match: {
+      registered: { $gte: "2020-01-01T00:00:00+00:00" }, // Filter documents where registered date is greater than or equal to the specified date
+    },
+  },
+  {
+    $count: "usersRegisteredAfter2020", // Count the matching documents
+  },
+]);
+```
+
 ### Get a list of all unique tags:
 
 10. What are all the unique tags used across all users?
@@ -189,13 +204,22 @@ db.persons.aggregate([
 
 ```js
 db.persons.aggregate([
-  { $match: { tags: "culpa" } }, // Filters documents where the "tags" array contains the value "culpa"
+  { $match: { tags: "culpa" } }, // Filters documents where the "tags" array contains "culpa"
+  { $count: "usersWithCulpaTag" }, // Counts the number of matching documents
 ]);
 ```
 
 ### Sort users by their age:
 
 12. Get a sorted list of users in descending order of age.
+
+ans:
+
+```js
+db.persons.aggregate([
+  { $sort: { age: -1 } }, // Sorts documents by age in descending order
+]);
+```
 
 ### Find users having specific tags:
 
@@ -204,7 +228,7 @@ db.persons.aggregate([
 ans:
 
 ```js
-db.persons.aggregate([{ $match: { tags: { $all: ["id", "ad"] } } }]);
+db.persons.aggregate([{ $match: { tags: { $all: ["eiusmod", "culpa"] } } }]);
 ```
 
 **or**
@@ -227,12 +251,30 @@ db.persons.aggregate([
 **without aggregation**
 
 ```js
-db.persons.find({ $and: [{ age: { $gte: 20 }, age: { $lte: 29 } }] }).count();
+db.persons.countDocuments({ $and: [{ age: { $gte: 20 }, age: { $lte: 29 } }] });
 ```
 
 ### Calculate the average number of tags per user:
 
 15. What is the average number of tags a user has?
+
+ans:
+
+```js
+db.persons.aggregate([
+  {
+    $addFields: {
+      numberOfTags: { $size: "$tags" }, // Add a new field with the size of the tags array
+    },
+  },
+  {
+    $group: {
+      _id: null, // Group all documents together
+      averageTagsPerUser: { $avg: "$numberOfTags" }, // Calculate the average of the new field
+    },
+  },
+]);
+```
 
 ### Find top 5 countries with the most users:
 
@@ -243,6 +285,8 @@ ans:
 ```js
 db.persons.aggregate([
   { $group: { _id: "$company.location.country", userCount: { $sum: 1 } } },
+  { $sort: { userCount: -1 } }, // Sort by user count in descending order
+  { $limit: 5 }, // Limit to the top 5
 ]);
 ```
 
@@ -311,7 +355,7 @@ db.persons.aggregate([
 
 ### Find the top 3 companies with the most users:
 
-19. Which companies have the highest number of users associated with them?
+20. Which companies have the highest number of users associated with them?
 
 ```js
 db.persons.aggregate([
@@ -332,7 +376,7 @@ db.persons.aggregate([
 
 ### Get the age distribution of users by gender:
 
-20. What is the age distribution (e.g., count by age range) for male and female users?
+21. What is the age distribution (e.g., count by age range) for male and female users?
 
 ```js
 db.persons.aggregate([
@@ -355,7 +399,7 @@ db.persons.aggregate([
 
 ### Find users with missing or null fields:
 
-21. How many users have missing or null values for critical fields such as name, age, or company.email?
+22. How many users have missing or null values for critical fields such as name, age, or company.email?
 
 ```js
 db.persons.aggregate([
@@ -376,7 +420,7 @@ db.persons.aggregate([
 
 ### Find users with a specific country and favorite fruit:
 
-22. How many users from 'Italy' have 'banana' as their favoriteFruit?
+23. How many users from 'Italy' have 'banana' as their favoriteFruit?
 
 ```js
 db.persons.aggregate([
@@ -394,7 +438,7 @@ db.persons.aggregate([
 
 ### Find the maximum, minimum, and average age:
 
-23. What is the maximum, minimum, and average age of all users?
+24. What is the maximum, minimum, and average age of all users?
 
 ```js
 db.persons.aggregate([
@@ -419,7 +463,7 @@ db.persons.aggregate([
 
 ### Top 5 tags by frequency:
 
-24. What are the 5 most frequently used tags?
+25. What are the 5 most frequently used tags?
 
 ```js
 db.persons.aggregate([
@@ -443,7 +487,7 @@ db.persons.aggregate([
 
 ### Users with the longest time since registration:
 
-25. Who are the top 10 users with the longest time since they registered?
+26. Who are the top 10 users with the longest time since they registered?
 
 ```js
 db.persons.aggregate([
@@ -458,7 +502,7 @@ db.persons.aggregate([
 
 ### Find users grouped by both favoriteFruit and eyeColor:
 
-26. How many users prefer each combination of favoriteFruit and eyeColor?
+27. How many users prefer each combination of favoriteFruit and eyeColor?
 
 ```js
 db.persons.aggregate([

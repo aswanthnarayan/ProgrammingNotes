@@ -8,41 +8,39 @@ Aggregation is a way of querying and transforming data to perform complex operat
 2. Map-Reduce
 3. Aggregation Pipeline
 
-## SINGLE PURPOSE
+## SINGLE PURPOSE AGGREGATION METHODS
 
-These methods are simpler and more specific than the aggregation pipeline. They are designed for specific types of aggregation operations:
+These are simple, standalone methods for common aggregation tasks.
 
-* **count():** Returns the count of documents matching a query.
+* **`db.collection.countDocuments(query)`:** Returns an accurate count of documents matching a query. It performs a collection scan or uses an index.
 
 ```js
-db.collection.count({ status: "active" });
+// Get an accurate count of active users
+db.collection.countDocuments({ status: "active" });
 ```
 
-* **distinct():** Returns an array of distinct values for a specified field among matching documents.
+* **`db.collection.estimatedDocumentCount()`:** Provides a fast, estimated count of all documents in a collection by reading collection metadata. It does not take a query.
 
 ```js
-db.collection.distinct("status");
-```
-
-* **estimatedDocumentCount():** Returns an estimate of the count of documents in a collection.
-
-```js
+// Get a quick estimate of the total number of documents
 db.collection.estimatedDocumentCount();
 ```
 
-* **findAndModify:** Finds and modifies a single document.
+* **`db.collection.distinct(field, query)`:** Returns an array of unique values for a specified field.
 
 ```js
-db.collection.findAndModify({
-  query: { status: "active" },
-  update: { $set: { status: "inactive" } }
-});
+// Get all unique status values
+db.collection.distinct("status");
 ```
 
+_Note: The older `count()` method is deprecated in favor of `countDocuments()` and `estimatedDocumentCount()`._
 
-## MAP-REDUCE
+
+## MAP-REDUCE (Legacy)
 
 Map-Reduce is a data processing technique used to handle large datasets by breaking down the computation into two main steps: map and reduce.
+
+_**Note:** While powerful, `mapReduce` is considered legacy. The Aggregation Pipeline provides better performance, usability, and a richer set of features for most use cases. It is recommended to use the aggregation pipeline whenever possible._
 
 * **Map:** Takes each document from a collection and processes it to generate key-value pairs. Think of it as a "mapping" function that extracts or calculates some data from each document.
 
@@ -87,29 +85,17 @@ MongoDB's Aggregation Framework is a powerful tool that allows you to perform op
 
 ## Common Aggregation Stages
 
-1. **$match:**
-
- Filters documents based on a condition.
-
-2. **$group:** 
-
-Groups documents by a specified field and can perform operations on the grouped data.
-
-3. **$sort:** 
-
-Sorts the documents.
-
-4. **$project:** 
-
-Shapes the documents by including, excluding, or adding new fields.
-
-5. **$limit:** 
-
-Limits the number of documents passed to the next stage.
-
-6. **$unwind:**
-
- Deconstructs an array field from the input documents to output a document for each element.
+1.  **`$match`**: Filters documents based on specified conditions, similar to a `find()` query. It's often placed early in the pipeline to reduce the amount of data processed.
+2.  **`$group`**: Groups documents by a specified identifier and applies accumulator expressions (e.g., `$sum`, `$avg`, `$push`) to the grouped data.
+3.  **`$project`**: Reshapes documents. You can include, exclude, or rename fields, and compute new fields.
+4.  **`$sort`**: Sorts the documents based on one or more fields.
+5.  **`$limit`**: Restricts the number of documents passed to the next stage.
+6.  **`$skip`**: Skips a specified number of documents.
+7.  **`$unwind`**: Deconstructs an array field, creating a new output document for each element in the array.
+8.  **`$lookup`**: Performs a left outer join to another collection in the same database to filter in documents from the "joined" collection for processing.
+9.  **`$addFields`**: Adds new fields to documents. It's similar to `$project` but keeps all existing fields.
+10. **`$count`**: Returns a count of the documents at a particular stage of the pipeline.
+11. **`$out`**: Writes the results of the pipeline to a new collection. This must be the last stage in the pipeline.
 
 **In MongoDB Atlas, you can run aggregation pipelines directly in the Aggregation tab of a collection.**
 
@@ -470,7 +456,7 @@ This method also returns the same output. Here, we add a new field to the docume
 ```
 This query filters users who have "enim" in their tags array and then counts the results.
 
-### 9. What are the names and age of the users who are inactive and a tag "valit" in their document
+### 9. What are the names and age of users who are inactive and have the tag "velit"?
 
 ```
 [
