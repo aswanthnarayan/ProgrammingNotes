@@ -1,5 +1,5 @@
 # EXPRESS
-Express is a lightweight Node.js framework that provides robust set of features for web and mobile application
+Express is a lightweight Node.js framework that provides a robust set of features for web and mobile application
 
 It provides  set of features that streamline the development of server-side applications, making it easier for developers to manage routing, middleware, and HTTP requests.
 
@@ -110,6 +110,56 @@ app.delete('/users/:id', (req, res) => {
 app.patch('/users/:id', (req, res) => {
     res.send(`Partially updating user with ID ${req.params.id}`);
 });
+
+## Handling Incoming Data
+
+Express provides several ways to access data from an incoming request, primarily through the `req` (request) object.
+
+### Route Parameters (`req.params`)
+
+Route parameters are named URL segments used to capture values at specific positions in the URL. The captured values are populated in the `req.params` object.
+
+```js
+// URL: /users/123/books/456
+app.get('/users/:userId/books/:bookId', (req, res) => {
+  const { userId, bookId } = req.params;
+  res.send(`Fetching book ${bookId} for user ${userId}.`); // Fetching book 456 for user 123.
+});
+```
+
+### Query String Parameters (`req.query`)
+
+Query strings are used to send data to the server as key-value pairs appended to the URL. Express parses them into the `req.query` object.
+
+```js
+// URL: /api/articles?page=2&sort=date
+app.get('/api/articles', (req, res) => {
+  const page = req.query.page; // "2"
+  const sort = req.query.sort; // "date"
+  res.send(`Fetching page ${page} sorted by ${sort}.`);
+});
+```
+
+### Request Body (`req.body`)
+
+To handle data sent in the body of a `POST`, `PUT`, or `PATCH` request (commonly in JSON format), you must use middleware like `express.json()`.
+
+```js
+const express = require('express');
+const app = express();
+
+// Middleware to parse JSON bodies. This must be placed before your routes.
+app.use(express.json());
+
+app.post('/api/users', (req, res) => {
+  const newUser = req.body;
+  console.log('Received user:', newUser);
+  // Logic to add user to a database...
+  res.status(201).json({ message: 'User created successfully', user: newUser });
+});
+
+app.listen(3000);
+```
 
 ```
 
@@ -462,9 +512,51 @@ Sessions are used to maintain the state across multiple requests in a web applic
 
 Install the express-session package:
 
-```js 
+```sh
 npm install express-session
+```
 
+Next, configure it in your application. The `secret` should be a long, random string stored securely in an environment variable.
+
+```js
+const session = require('express-session');
+
+app.use(session({
+  secret: 'your-super-secret-key', // In production, use an environment variable
+  resave: false,
+  saveUninitialized: true,
+  cookie: { 
+    secure: false, // Set to true if your site is on HTTPS
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
+
+// Example: Creating a session on login
+app.get('/login', (req, res) => {
+  // In a real app, you would verify credentials first
+  req.session.user = { id: 123, username: 'Aswanth' };
+  res.send('You have successfully logged in.');
+});
+
+// Example: Accessing session data
+app.get('/profile', (req, res) => {
+  if (req.session.user) {
+    res.send(`Welcome to your profile, ${req.session.user.username}`);
+  } else {
+    res.status(401).send('Please log in to view this page.');
+  }
+});
+
+// Example: Destroying a session on logout
+app.get('/logout', (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      return res.send('Error logging out');
+    }
+    res.clearCookie('connect.sid'); // Clears the session cookie
+    res.send('You have successfully logged out.');
+  });
+});
 ```
 
 ### Authentication
@@ -472,6 +564,31 @@ Authentication is the process of verifying the identity of a user or system. It'
 
 ### Authorization
 Authorization is the process of determining what an authenticated user is allowed to do. It involves checking permissions or access levels.
+
+### Practical Authentication with Middleware
+
+You can protect routes by creating a middleware function that checks if a user is authenticated before allowing access.
+
+```js
+// Middleware to check if the user is logged in
+function requireLogin(req, res, next) {
+  if (req.session && req.session.user) {
+    return next(); // User is authenticated, proceed to the next function
+  } else {
+    res.status(401).send('Unauthorized: You must be logged in to access this page.');
+  }
+}
+
+// A public route
+app.get('/', (req, res) => {
+  res.send('Welcome to the homepage!');
+});
+
+// A protected route using the middleware
+app.get('/dashboard', requireLogin, (req, res) => {
+  res.send(`Welcome to your dashboard, ${req.session.user.username}!`);
+});
+```
 
 
 
@@ -538,9 +655,12 @@ const app = express()
 let a = 10;
 let b = 20;
  
+// Note: This is a general Node.js concept, not specific to Express.
 if (a == 10) {
     console.log(a)
-    process.exitCode(1);
+    // Set the exit code. The process will exit with this code when it terminates naturally.
+    process.exitCode = 1;
+    return; // Stop further execution in this script
 }
  
 console.log(b);
