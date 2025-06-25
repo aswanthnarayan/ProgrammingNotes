@@ -1,36 +1,5 @@
 # REDUX
 
-"""
-## Table of Contents
-
-This section outlines the structure of the document, providing quick navigation
-to various topics related to Redux. Each entry in the table of contents links
-to a specific section in the document, allowing for easy access to detailed
-information on Redux concepts, usage, and advanced patterns.
-
-1.  Introduction to Redux
-    -  What is Redux?
-    -  Three Core Principles
-    -  Redux Data Flow (The Redux Workflow)
-2.  Core Redux Concepts
-    -  Store
-    -  Actions
-    -  Reducers
-    -  Immutability in Redux
-    -  combineReducers
-3.  Redux vs. Flux
-4.  Using Redux with React (`react-redux`)
-    -  The `Provider` Component
-    -  Redux Hooks: `useSelector()` and `useDispatch()`
-    -  Legacy API: `connect()` HOC
-5.  Redux Toolkit (RTK)
-6.  Middleware and Asynchronous Actions
-7.  Advanced Patterns & Performance
-8.  Ecosystem & Practical Use Cases
-9.  Practical Projects
-10. RTK Query: Modern Data Fetching
-"""
-
 ## Table of Contents
 
 1.  [Introduction to Redux](#introduction-to-redux)
