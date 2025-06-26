@@ -5,7 +5,7 @@ A Linked List is a linear data structure where elements, called **nodes**, are n
 -   **Head:** The entry point to the linked list. It's a pointer to the first node.
 -   **Tail:** The last node in the list, which points to `null`.
 
-![Linked List Diagram](https://media.geeksforgeeks.org/wp-content/cdn-uploads/20220712170328/intro-to-linked-list.png)
+![Linked List Diagram](https://techvidvan.com/tutorials/wp-content/uploads/sites/2/2021/06/TechVidvan-Linked-list-normal-image01.jpg)
 
 ## Advantages Over Arrays
 

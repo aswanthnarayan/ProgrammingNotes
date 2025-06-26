@@ -4,7 +4,7 @@ A Circular Linked List is a variation of a linked list in which the last node po
 
 -   **Structure:** Can be either singly or doubly linked, but the defining feature is that the `tail` node's `next` pointer points to the `head` node.
 
-![Circular Linked List Diagram](https://media.geeksforgeeks.org/wp-content/uploads/Circular-Singly-Linked-List.png)
+![Circular Linked List Diagram](https://techvidvan.com/tutorials/wp-content/uploads/sites/2/2021/07/Linked-Lists-in-C-normal-image03.jpg)
 
 ## Use Cases & Advantages
 

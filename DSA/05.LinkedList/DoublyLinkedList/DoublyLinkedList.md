@@ -5,7 +5,7 @@ A Doubly Linked List (DLL) is a variation of a linked list where each node has t
 -   **Head:** The first node in the list. Its `prev` pointer is `null`.
 -   **Tail:** The last node in the list. Its `next` pointer is `null`.
 
-![Doubly Linked List Diagram](https://media.geeksforgeeks.org/wp-content/uploads/20200318185603/Doubly-Linked-List-1.png)
+![Doubly Linked List Diagram](https://techvidvan.com/tutorials/wp-content/uploads/sites/2/2021/06/TechVidvan-Doubly-linked-list-normla-image.jpg)
 
 ## Advantages Over Singly Linked Lists
 
