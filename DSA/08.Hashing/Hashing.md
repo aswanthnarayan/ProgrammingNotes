@@ -63,3 +63,36 @@ There are several probing strategies:
 -   More complex to implement, especially deletion (deleted slots must be marked specially).
 -   Performance degrades significantly as the table fills up (i.e., as the load factor gets high).
 -   The table size must be greater than the number of elements.
+
+---
+
+## Key Concepts in Hashing
+
+### Load Factor (α)
+
+The **load factor** is a measure of how full the hash table is. It is crucial for understanding the efficiency of a hash table.
+
+It is calculated as:
+**α = n / k**
+
+Where:
+-   **n** is the number of elements stored in the hash table.
+-   **k** is the number of slots (or buckets) in the hash table.
+
+-   **For Separate Chaining:** The load factor can be 1 or even greater, as each bucket can store multiple elements in its chain. A higher load factor increases the average length of the chains, making lookups slower.
+-   **For Open Addressing:** The load factor must be less than 1 (α < 1), as each slot can only hold one element. As the load factor approaches 1, performance degrades dramatically because probes become very long. It's common to resize the table when the load factor exceeds a certain threshold (e.g., 0.5 or 0.7).
+
+### Clustering
+
+Clustering is a phenomenon in **open addressing** where keys start to form groups or "clusters" in the hash table. This leads to longer probe sequences for new insertions and lookups, which degrades the hash table's performance from O(1) towards O(n).
+
+There are two main types of clustering:
+
+1.  **Primary Clustering:**
+    -   This occurs with **linear probing**. When a collision happens, the algorithm checks the next consecutive slot. If that is also occupied, it checks the next, and so on.
+    -   As more keys hash to the same general area, they create a long, continuous block of occupied slots. Any new key that hashes into this block will have to traverse a long way to find an empty slot, and it will also extend the cluster, making the problem worse.
+
+2.  **Secondary Clustering:**
+    -   This is a more subtle form of clustering that can occur with **quadratic probing**.
+    -   While quadratic probing avoids the long runs of primary clustering, keys that hash to the same initial index will follow the exact same probe sequence. This creates its own "cluster" along a specific path, increasing search times for those keys.
+    -   **Double hashing** is effective at mitigating secondary clustering because it uses a second hash function to generate a unique probe sequence for each key, even if they initially collide.
